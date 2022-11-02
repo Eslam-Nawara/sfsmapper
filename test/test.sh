@@ -1,6 +1,6 @@
 #!/bin/sh
 
-go run ./main.go mnt &
+go run ./test/main.go /test/mnt &
 sleep 0.3
 
 String=$(cat ./mnt/Text)
