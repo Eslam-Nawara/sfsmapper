@@ -14,9 +14,9 @@ type SubStruct struct {
 }
 
 type Fuse struct {
-	Text   string
-	Intger int
-	Sub    SubStruct
+	Text    string
+	Integer int
+	Sub     SubStruct
 }
 
 func main() {
@@ -27,8 +27,8 @@ func main() {
 	}
 	mountPoint := os.Args[1]
 	data := &Fuse{
-		Text:   "This is a text content",
-		Intger: 2222,
+		Text:    "This is a text content",
+		Integer: 2222,
 		Sub: SubStruct{
 			SomeValue:      20,
 			SomeOtherValue: "some data",

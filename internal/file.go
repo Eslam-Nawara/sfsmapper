@@ -38,13 +38,14 @@ func NewFile(contentLength int, path []string, str any, name string) *File {
 
 // Provides the core information for a file
 func (file *File) Attr(ctx context.Context, a *fuse.Attr) error {
+	file.updateFileContent()
 	*a = file.Attributes
 	return nil
 }
 
 // Returns the content of a file
 func (file *File) ReadAll(ctx context.Context) ([]byte, error) {
-	return append(file.fetchFileContent(), []byte("\n")...), nil
+	return append(file.updateFileContent(), []byte("\n")...), nil
 }
 
 func (file *File) GetDirentType() fuse.DirentType {
@@ -52,21 +53,13 @@ func (file *File) GetDirentType() fuse.DirentType {
 }
 
 // Read the file content
-func (file *File) fetchFileContent() []byte {
-	var content []byte
-	var traverse func(m map[string]any, i int)
-
+func (file *File) updateFileContent() []byte {
 	structMap := structs.Map(file.Struct)
 
-	traverse = func(m map[string]any, i int) {
-		if i == len(file.Path) {
-			content = []byte(fmt.Sprintln(reflect.ValueOf(m[file.Name])))
-		} else {
-			traverse(m[file.Path[i]].(map[string]any), i+1)
-		}
+	for _, v := range file.Path {
+		structMap = structMap[v].(map[string]any)
 	}
-
-	traverse(structMap, 0)
+	content := []byte(fmt.Sprintln(reflect.ValueOf(structMap[file.Name])))
 	file.Attributes.Size = uint64(len(content))
 	return content
 }
