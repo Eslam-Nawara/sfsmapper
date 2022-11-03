@@ -6,7 +6,7 @@ import (
 
 	"bazil.org/fuse"
 	"bazil.org/fuse/fs"
-	"github.com/Eslam-Nawara/sfsmapper/internal"
+	"github.com/Eslam-Nawara/sfsmapper/internal/fsnode"
 	"github.com/fatih/structs"
 )
 
@@ -52,7 +52,7 @@ func NewFS(data any) *FS {
 
 // Initialize the root directory
 func (fs *FS) Root() (fs.Node, error) {
-	dir := internal.NewDir()
+	dir := fsnode.NewDir()
 	dir.Entries = createEntries(fs.dataMp, []string{}, fs.Struct)
 	return dir, nil
 }
@@ -63,11 +63,11 @@ func createEntries(structMap any, path []string, Struct any) map[string]any {
 	for key, val := range structMap.(map[string]any) {
 		if reflect.TypeOf(val).Kind() == reflect.Map {
 			path = append(path, key)
-			dir := internal.NewDir()
+			dir := fsnode.NewDir()
 			dir.Entries = createEntries(val, path, Struct)
 			entries[key] = dir
 		} else {
-			entries[key] = internal.NewFile(len([]byte(fmt.Sprintln(reflect.ValueOf(val)))), path, Struct, key)
+			entries[key] = fsnode.NewFile(len([]byte(fmt.Sprintln(reflect.ValueOf(val)))), path, Struct, key)
 		}
 	}
 	return entries
